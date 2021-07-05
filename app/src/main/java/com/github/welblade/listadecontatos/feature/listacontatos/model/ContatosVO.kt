@@ -1,4 +1,4 @@
-package com.everis.listadecontatos.feature.listacontatos.model
+package com.github.welblade.listadecontatos.feature.listacontatos.model
 
 data class ContatosVO(
     var id: Int = -1,

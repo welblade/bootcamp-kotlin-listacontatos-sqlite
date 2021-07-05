@@ -1,4 +1,4 @@
-package com.everis.listadecontatos
+package com.github.welblade.listadecontatos
 
 import org.junit.Test
 

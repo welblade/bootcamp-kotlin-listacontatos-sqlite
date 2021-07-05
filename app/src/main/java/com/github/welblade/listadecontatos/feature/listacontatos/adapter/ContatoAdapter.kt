@@ -1,12 +1,12 @@
-package com.everis.listadecontatos.feature.listacontatos.adapter
+package com.github.welblade.listadecontatos.feature.listacontatos.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.everis.listadecontatos.R
-import com.everis.listadecontatos.feature.listacontatos.model.ContatosVO
+import com.github.welblade.listadecontatos.R
+import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
 import kotlinx.android.synthetic.main.item_contato.view.*
 
 class ContatoAdapter(

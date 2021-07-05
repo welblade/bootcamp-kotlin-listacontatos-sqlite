@@ -1,12 +1,11 @@
-package com.everis.listadecontatos.feature.contato
+package com.github.welblade.listadecontatos.feature.contato
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.everis.listadecontatos.R
-import com.everis.listadecontatos.bases.BaseActivity
-import com.everis.listadecontatos.feature.listacontatos.model.ContatosVO
-import com.everis.listadecontatos.singleton.ContatoSingleton
+import com.github.welblade.listadecontatos.R
+import com.github.welblade.listadecontatos.bases.BaseActivity
+import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
+import com.github.welblade.listadecontatos.singleton.ContatoSingleton
 import kotlinx.android.synthetic.main.activity_contato.*
 import kotlinx.android.synthetic.main.activity_contato.toolBar
 
