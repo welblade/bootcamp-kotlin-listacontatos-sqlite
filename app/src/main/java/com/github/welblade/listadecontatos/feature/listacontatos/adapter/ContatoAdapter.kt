@@ -6,16 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.welblade.listadecontatos.R
+import com.github.welblade.listadecontatos.databinding.ItemContatoBinding
 import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
-import kotlinx.android.synthetic.main.item_contato.view.*
 
 class ContatoAdapter(
     private val context: Context,
     private val lista: List<ContatosVO>,
     private val onClick: ((Int) -> Unit)
 ) : RecyclerView.Adapter<ContatoViewHolder>() {
+    private lateinit var itemContato : ItemContatoBinding
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContatoViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_contato,parent,false)
+        itemContato = ItemContatoBinding.inflate(LayoutInflater.from(context))
         return ContatoViewHolder(view)
     }
 
@@ -24,9 +27,9 @@ class ContatoAdapter(
     override fun onBindViewHolder(holder: ContatoViewHolder, position: Int) {
         val contato = lista[position]
         with(holder.itemView){
-            tvNome.text = contato.nome
-            tvTelefone.text = contato.telefone
-            llItem.setOnClickListener { onClick(position) }
+            itemContato.tvNome.text = contato.nome
+            itemContato.tvTelefone.text = contato.telefone
+            itemContato.llItem.setOnClickListener { onClick(position) }
         }
     }
 
