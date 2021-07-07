@@ -61,14 +61,14 @@ class DbHelper(
         val db: SQLiteDatabase = readableDatabase ?: return null
         val sql = "SELECT * FROM  $TABLE_NAME WHERE $COLUMNS_ID = ?"
         val cursor : Cursor = db.rawQuery(sql, arrayOf("$id")) ?: return null
-
-        return ContatosVO(
-            cursor.getInt(cursor.getColumnIndex(COLUMNS_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMNS_NOME)),
-            cursor.getString(cursor.getColumnIndex(COLUMNS_TELEFONE))
-        )
-
-       // return null
+        if (cursor.moveToNext()){
+            return ContatosVO(
+                cursor.getInt(cursor.getColumnIndex(COLUMNS_ID)),
+                cursor.getString(cursor.getColumnIndex(COLUMNS_NOME)),
+                cursor.getString(cursor.getColumnIndex(COLUMNS_TELEFONE))
+            )
+        }
+        return null
     }
     fun saveContato(contato : ContatosVO){
         val db: SQLiteDatabase = writableDatabase ?: return
@@ -86,5 +86,9 @@ class DbHelper(
             put(COLUMNS_TELEFONE, contato.telefone)
         }
         db.update(TABLE_NAME, values, where, arrayOf("${contato.id}"))
+    }
+
+    fun deleteContato(id: Int) {
+        // TODO: Implement
     }
 }

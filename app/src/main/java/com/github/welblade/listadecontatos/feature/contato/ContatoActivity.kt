@@ -31,13 +31,12 @@ class ContatoActivity : BaseActivity() {
         if (index == -1){
             activityContato.btnExcluirContato.visibility = View.GONE
             return
-        }else {
-            val contato = ContatoApplication
-                .instance.helperDb?.findContatoById(index)
-            id = contato?.id ?: 0
-            activityContato.etNome.setText(contato?.nome)
-            activityContato.etTelefone.setText(contato?.telefone)
         }
+        val contato = ContatoApplication
+            .instance.helperDb?.findContatoById(index)
+        id = contato?.id ?: 0
+        activityContato.etNome.setText(contato?.nome)
+        activityContato.etTelefone.setText(contato?.telefone)
     }
 
     private fun onClickSalvarContato(){
@@ -57,7 +56,7 @@ class ContatoActivity : BaseActivity() {
 
     fun onClickExcluirContato(view: View) {
         if(index > -1){
-            ContatoSingleton.lista.removeAt(index)
+            ContatoApplication.instance.helperDb?.deleteContato(id)
             finish()
         }
     }
