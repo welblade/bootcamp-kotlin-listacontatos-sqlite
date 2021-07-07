@@ -1,20 +1,16 @@
 package com.github.welblade.listadecontatos.feature.contato
 
 import android.os.Bundle
-import android.util.Log
 import android.util.Log.*
 import android.view.View
-import com.github.welblade.listadecontatos.R
 import com.github.welblade.listadecontatos.application.ContatoApplication
 import com.github.welblade.listadecontatos.bases.BaseActivity
 import com.github.welblade.listadecontatos.databinding.ActivityContatoBinding
 import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
-import com.github.welblade.listadecontatos.singleton.ContatoSingleton
 
 class ContatoActivity : BaseActivity() {
     private lateinit var activityContato : ActivityContatoBinding
-    private var id : Int = 0
-    private var index: Int = -1
+    private var idContato: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         activityContato = ActivityContatoBinding.inflate(layoutInflater)
@@ -26,15 +22,14 @@ class ContatoActivity : BaseActivity() {
     }
 
     private fun setupContato(){
-        index = intent.getIntExtra("index",-1)
-        Log.e("INDEX", "valor de index $index")
-        if (index == -1){
+        idContato = intent.getIntExtra("index",-1)
+        if (idContato == -1){
             activityContato.btnExcluirContato.visibility = View.GONE
             return
         }
         val contato = ContatoApplication
-            .instance.helperDb?.findContatoById(index)
-        id = contato?.id ?: 0
+            .instance.helperDb?.findContatoById(idContato)
+        idContato = contato?.id ?: -1
         activityContato.etNome.setText(contato?.nome)
         activityContato.etTelefone.setText(contato?.telefone)
     }
@@ -43,11 +38,11 @@ class ContatoActivity : BaseActivity() {
         val nome = activityContato.etNome.text.toString()
         val telefone = activityContato.etTelefone.text.toString()
         val contato = ContatosVO(
-            id,
+            idContato,
             nome,
             telefone
         )
-        if (contato.id == 0)
+        if (idContato == -1)
             ContatoApplication.instance.helperDb?.saveContato(contato)
         else
             ContatoApplication.instance.helperDb?.updateContato(contato)
@@ -55,8 +50,8 @@ class ContatoActivity : BaseActivity() {
     }
 
     fun onClickExcluirContato(view: View) {
-        if(index > -1){
-            ContatoApplication.instance.helperDb?.deleteContato(id)
+        if(idContato > -1){
+            ContatoApplication.instance.helperDb?.deleteContato(idContato)
             finish()
         }
     }

@@ -89,6 +89,8 @@ class DbHelper(
     }
 
     fun deleteContato(id: Int) {
-        // TODO: Implement
+        val db: SQLiteDatabase = writableDatabase ?: return
+        val where = "$COLUMNS_ID == ?"
+        db.delete(TABLE_NAME, where, arrayOf("$id"))
     }
 }

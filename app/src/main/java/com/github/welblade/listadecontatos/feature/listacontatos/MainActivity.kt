@@ -2,11 +2,8 @@ package com.github.welblade.listadecontatos.feature.listacontatos
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.welblade.listadecontatos.R
 import com.github.welblade.listadecontatos.application.ContatoApplication
 import com.github.welblade.listadecontatos.bases.BaseActivity
 import com.github.welblade.listadecontatos.databinding.ActivityMainBinding
@@ -24,7 +21,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         activityMain = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMain.root)
-        geraListaDeContatos()
         setupToolBar(activityMain.toolBar, "Lista de contatos",false)
         setupListView()
         setupOnClicks()
@@ -32,28 +28,16 @@ class MainActivity : BaseActivity() {
 
     private fun setupOnClicks(){
         activityMain.fab.setOnClickListener { onClickAdd() }
-        activityMain.ivBuscar.apply {
-            this.setOnClickListener { onClickBuscar() }
-        }
+        activityMain.ivBuscar.setOnClickListener { onClickBuscar() }
     }
 
     private fun setupListView(){
         activityMain.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ContatoAdapter(this,ContatoSingleton.lista) {onClickItemRecyclerView(it)}
-        activityMain.recyclerView.adapter = adapter
-    }
-
-    private fun geraListaDeContatos(){
-        val lista = ContatoApplication
-            .instance.helperDb?.findContatos("") ?: mutableListOf()
-        lista.forEach {
-            ContatoSingleton.lista.add(it)
-        }
     }
 
     override fun onResume() {
         super.onResume()
-        adapter?.notifyDataSetChanged()
+        onClickBuscar()
     }
 
     private fun onClickAdd(){
@@ -81,5 +65,4 @@ class MainActivity : BaseActivity() {
         activityMain.recyclerView.adapter = adapter
         Toast.makeText(this,"Buscando por $busca",Toast.LENGTH_SHORT).show()
     }
-
 }
