@@ -2,6 +2,7 @@ package com.github.welblade.listadecontatos.feature.listacontatos
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.welblade.listadecontatos.application.ContatoApplication
@@ -10,7 +11,6 @@ import com.github.welblade.listadecontatos.databinding.ActivityMainBinding
 import com.github.welblade.listadecontatos.feature.contato.ContatoActivity
 import com.github.welblade.listadecontatos.feature.listacontatos.adapter.ContatoAdapter
 import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
-import com.github.welblade.listadecontatos.singleton.ContatoSingleton
 
 
 class MainActivity : BaseActivity() {
@@ -54,15 +54,20 @@ class MainActivity : BaseActivity() {
     private fun onClickBuscar(){
         val busca = activityMain.etBuscar.text.toString()
         var listaFiltrada: List<ContatosVO> = mutableListOf()
-        try {
-            listaFiltrada = ContatoApplication
-                .instance.helperDb?.findContatos(busca) ?: mutableListOf()
-        } catch (err : Exception){
-            err.printStackTrace()
-        }
-
-        adapter = ContatoAdapter(this,listaFiltrada) {onClickItemRecyclerView(it)}
-        activityMain.recyclerView.adapter = adapter
-        Toast.makeText(this,"Buscando por $busca",Toast.LENGTH_SHORT).show()
+        activityMain.progress.visibility = View.VISIBLE
+        Thread {
+            try {
+                listaFiltrada = ContatoApplication
+                    .instance.helperDb?.findContatos(busca) ?: mutableListOf()
+            } catch (err: Exception) {
+                err.printStackTrace()
+            }
+            runOnUiThread {
+                adapter = ContatoAdapter(this, listaFiltrada) { onClickItemRecyclerView(it) }
+                activityMain.recyclerView.adapter = adapter
+                activityMain.progress.visibility = View.GONE
+                Toast.makeText(this, "Buscando por $busca", Toast.LENGTH_SHORT).show()
+            }
+        }.start()
     }
 }

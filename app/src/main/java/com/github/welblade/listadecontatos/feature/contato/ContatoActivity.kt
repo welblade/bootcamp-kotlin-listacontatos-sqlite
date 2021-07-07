@@ -1,6 +1,7 @@
 package com.github.welblade.listadecontatos.feature.contato
 
 import android.os.Bundle
+import android.util.Log
 import android.util.Log.*
 import android.view.View
 import com.github.welblade.listadecontatos.application.ContatoApplication
@@ -27,11 +28,21 @@ class ContatoActivity : BaseActivity() {
             activityContato.btnExcluirContato.visibility = View.GONE
             return
         }
-        val contato = ContatoApplication
-            .instance.helperDb?.findContatoById(idContato)
-        idContato = contato?.id ?: -1
-        activityContato.etNome.setText(contato?.nome)
-        activityContato.etTelefone.setText(contato?.telefone)
+        activityContato.progress.visibility = View.VISIBLE
+        Thread {
+
+            try {
+                var contato = ContatoApplication.instance.helperDb?.findContatoById(idContato)
+                idContato = contato?.id ?: -1
+                runOnUiThread {
+                    activityContato.etNome.setText(contato?.nome)
+                    activityContato.etTelefone.setText(contato?.telefone)
+                    activityContato.progress.visibility = View.GONE
+                }
+            } catch (err: Exception) {
+                Log.e("DBHELPER", "Consulta: " + err.message.toString())
+            }
+        }.start()
     }
 
     private fun onClickSalvarContato(){
@@ -42,17 +53,42 @@ class ContatoActivity : BaseActivity() {
             nome,
             telefone
         )
-        if (idContato == -1)
-            ContatoApplication.instance.helperDb?.saveContato(contato)
-        else
-            ContatoApplication.instance.helperDb?.updateContato(contato)
-        finish()
+        activityContato.progress.visibility = View.VISIBLE
+        Thread {
+            if (idContato == -1) {
+                try {
+                    ContatoApplication.instance.helperDb?.saveContato(contato)
+                } catch (err: Exception) {
+                    Log.e("DBHELPER", "Inserir: " + err.message.toString())
+                }
+            } else {
+                try {
+                    ContatoApplication.instance.helperDb?.updateContato(contato)
+                } catch (err: Exception) {
+                    Log.e("DBHELPER", "Atualizar: " + err.message.toString())
+                }
+            }
+            runOnUiThread {
+                activityContato.progress.visibility = View.GONE
+                finish()
+            }
+        }.start()
     }
 
     fun onClickExcluirContato(view: View) {
         if(idContato > -1){
-            ContatoApplication.instance.helperDb?.deleteContato(idContato)
-            finish()
+            activityContato.progress.visibility = View.VISIBLE
+            Thread {
+                try {
+                    ContatoApplication.instance.helperDb?.deleteContato(idContato)
+                } catch (err: Exception) {
+                    Log.e("DBHELPER", "Deletar: " + err.message.toString())
+                }
+                runOnUiThread {
+                    activityContato.progress.visibility = View.GONE
+                    finish()
+                }
+            }.start()
         }
     }
 }
