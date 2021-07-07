@@ -17,9 +17,9 @@ class ContatoAdapter(
     private lateinit var itemContato : ItemContatoBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContatoViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_contato,parent,false)
-        itemContato = ItemContatoBinding.inflate(LayoutInflater.from(context))
-        return ContatoViewHolder(view)
+        //val view = LayoutInflater.from(context).inflate(R.layout.item_contato,parent,false)
+        itemContato = ItemContatoBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ContatoViewHolder(itemContato.root)
     }
 
     override fun getItemCount(): Int = lista.size
@@ -29,7 +29,7 @@ class ContatoAdapter(
         with(holder.itemView){
             itemContato.tvNome.text = contato.nome
             itemContato.tvTelefone.text = contato.telefone
-            itemContato.llItem.setOnClickListener { onClick(position) }
+            itemContato.llItem.setOnClickListener { onClick(contato.id) }
         }
     }
 

@@ -2,6 +2,8 @@ package com.github.welblade.listadecontatos.feature.listacontatos
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.welblade.listadecontatos.R
@@ -12,7 +14,6 @@ import com.github.welblade.listadecontatos.feature.contato.ContatoActivity
 import com.github.welblade.listadecontatos.feature.listacontatos.adapter.ContatoAdapter
 import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
 import com.github.welblade.listadecontatos.singleton.ContatoSingleton
-import java.lang.Exception
 
 
 class MainActivity : BaseActivity() {
@@ -22,7 +23,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMain = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_main)
+        setContentView(activityMain.root)
         geraListaDeContatos()
         setupToolBar(activityMain.toolBar, "Lista de contatos",false)
         setupListView()
@@ -31,7 +32,9 @@ class MainActivity : BaseActivity() {
 
     private fun setupOnClicks(){
         activityMain.fab.setOnClickListener { onClickAdd() }
-        activityMain.ivBuscar.setOnClickListener { onClickBuscar() }
+        activityMain.ivBuscar.apply {
+            this.setOnClickListener { onClickBuscar() }
+        }
     }
 
     private fun setupListView(){
@@ -41,9 +44,11 @@ class MainActivity : BaseActivity() {
     }
 
     private fun geraListaDeContatos(){
-        ContatoSingleton.lista.add(ContatosVO(1,"Fulano", "(00) 9900-0001"))
-        ContatoSingleton.lista.add(ContatosVO(2,"Ciclano", "(00) 9900-0002"))
-        ContatoSingleton.lista.add(ContatosVO(3,"Vinicius", "(00) 9900-0001"))
+        val lista = ContatoApplication
+            .instance.helperDb?.findContatos("") ?: mutableListOf()
+        lista.forEach {
+            ContatoSingleton.lista.add(it)
+        }
     }
 
     override fun onResume() {
@@ -71,6 +76,7 @@ class MainActivity : BaseActivity() {
         } catch (err : Exception){
             err.printStackTrace()
         }
+
         adapter = ContatoAdapter(this,listaFiltrada) {onClickItemRecyclerView(it)}
         activityMain.recyclerView.adapter = adapter
         Toast.makeText(this,"Buscando por $busca",Toast.LENGTH_SHORT).show()
