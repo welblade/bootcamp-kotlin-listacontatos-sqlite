@@ -2,6 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -21,11 +22,13 @@
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:background="#676767">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFF"
-                android:text="@string/search" />
+                android:text="@string/search"
+                android:labelFor="@id/etBuscar"/>
 
             <EditText
                 android:id="@+id/etBuscar"
@@ -33,19 +36,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:autofillHints="Search by name"
+                android:inputType="text"
                 android:minHeight="48dp"
                 android:textColor="#FFFFFF"
-                android:autofillHints=""
-                android:inputType="text" />
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
             <ImageView
                 android:id="@+id/ivBuscar"
                 android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:src="@android:drawable/ic_search_category_default"
                 android:focusable="true"
-                android:contentDescription="TODO" />
+                app:tint="@color/design_default_color_on_primary"
+                android:src="@android:drawable/ic_search_category_default"
+                android:contentDescription="@string/search_button" />
         </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"
@@ -62,7 +68,8 @@
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
                 android:tint="#FFFFFF"
-                android:src="@android:drawable/ic_input_add"/>
+                android:src="@android:drawable/ic_input_add"
+                android:contentDescription="@string/add_new_contact" />
         </FrameLayout>
 
     </LinearLayout>
