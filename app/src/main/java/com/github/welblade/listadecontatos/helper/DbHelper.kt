@@ -6,7 +6,10 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
-
+const val TABLE_NAME = "contato"
+const val COLUMNS_ID = "id"
+const val COLUMNS_NOME = "nome"
+const val COLUMNS_TELEFONE= "telefone"
 class DbHelper(
     context: Context
 ) : SQLiteOpenHelper(context, NOME_BANCO, null, VERSAO_ATUAL) {
@@ -14,17 +17,13 @@ class DbHelper(
         private const val NOME_BANCO = "contato.db"
         private const val VERSAO_ATUAL = 4
     }
-    private val TABLE_NAME = "contato"
-    private val COLUMNS_ID = "id"
-    private val COLUMNS_NOME = "nome"
-    private val COLUMNS_TELEFONE= "telefone"
+
     private val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
     private val CREATE_TABLE = """
         CREATE TABLE $TABLE_NAME (
-            $COLUMNS_ID INTEGER NOT NULL,
+            $COLUMNS_ID INTEGER PRIMARY KEY AUTOINCREMENT,
             $COLUMNS_NOME TEXT NOT NULL,
-            $COLUMNS_TELEFONE TEXT NOT NULL,
-            PRIMARY KEY ($COLUMNS_ID AUTOINCREMENT)
+            $COLUMNS_TELEFONE TEXT NOT NULL
         )
     """.trimIndent()
     override fun onCreate(db: SQLiteDatabase?) {
@@ -48,9 +47,9 @@ class DbHelper(
         val cursor : Cursor = db.query(TABLE_NAME, null,where, values, null, null,  null)
         while(cursor.moveToNext()){
             val contato = ContatosVO(
-                cursor.getInt(cursor.getColumnIndex(COLUMNS_ID)),
-                cursor.getString(cursor.getColumnIndex(COLUMNS_NOME)),
-                cursor.getString(cursor.getColumnIndex(COLUMNS_TELEFONE))
+                cursor.getInt(cursor.getColumnIndexOrThrow(COLUMNS_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMNS_NOME)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMNS_TELEFONE))
             )
             lista.add(contato)
         }
@@ -63,11 +62,12 @@ class DbHelper(
         val cursor : Cursor = db.rawQuery(sql, arrayOf("$id")) ?: return null
         if (cursor.moveToNext()){
             return ContatosVO(
-                cursor.getInt(cursor.getColumnIndex(COLUMNS_ID)),
-                cursor.getString(cursor.getColumnIndex(COLUMNS_NOME)),
-                cursor.getString(cursor.getColumnIndex(COLUMNS_TELEFONE))
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMNS_ID)),
+                nome = cursor.getString(cursor.getColumnIndexOrThrow(COLUMNS_NOME)),
+                telefone = cursor.getString(cursor.getColumnIndexOrThrow(COLUMNS_TELEFONE))
             )
         }
+        cursor.close()
         return null
     }
     fun saveContato(contato : ContatosVO){

@@ -1,21 +1,24 @@
-package com.github.welblade.listadecontatos.feature.listacontatos
+package com.github.welblade.listadecontatos.feature.listacontatos.view
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.welblade.listadecontatos.application.ContatoApplication
 import com.github.welblade.listadecontatos.bases.BaseActivity
 import com.github.welblade.listadecontatos.databinding.ActivityMainBinding
 import com.github.welblade.listadecontatos.feature.contato.ContatoActivity
 import com.github.welblade.listadecontatos.feature.listacontatos.adapter.ContatoAdapter
-import com.github.welblade.listadecontatos.feature.listacontatos.model.ContatosVO
+import com.github.welblade.listadecontatos.feature.listacontatos.repository.ListaDeContatosRepositoryImpl
+import com.github.welblade.listadecontatos.feature.listacontatos.viewmodel.ListaDeContatosViewModel
+import com.github.welblade.listadecontatos.helper.DbHelper
 
 
-class MainActivity : BaseActivity() {
+class ListaDeContatosActivity : BaseActivity() {
     private lateinit var activityMain: ActivityMainBinding
     private var adapter:ContatoAdapter? = null
+    private var contatosViewModel: ListaDeContatosViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +27,15 @@ class MainActivity : BaseActivity() {
         setupToolBar(activityMain.toolBar, "Lista de contatos",false)
         setupListView()
         setupOnClicks()
+        setupViewModel()
+    }
+
+    private fun setupViewModel(){
+        contatosViewModel = ListaDeContatosViewModel(
+            contatosRepository = ListaDeContatosRepositoryImpl(
+                DbHelper(this)
+            )
+        )
     }
 
     private fun setupOnClicks(){
@@ -53,21 +65,25 @@ class MainActivity : BaseActivity() {
 
     private fun onClickBuscar(){
         val busca = activityMain.etBuscar.text.toString()
-        var listaFiltrada: List<ContatosVO> = mutableListOf()
-        activityMain.progress.visibility = View.VISIBLE
-        Thread {
-            try {
-                listaFiltrada = ContatoApplication
-                    .instance.helperDb?.findContatos(busca) ?: mutableListOf()
-            } catch (err: Exception) {
-                err.printStackTrace()
+        contatosViewModel?.getContactList(busca,
+            onSuccess = { list ->
+                runOnUiThread {
+                    adapter = ContatoAdapter(this, list) { onClickItemRecyclerView(it) }
+                    activityMain.recyclerView.adapter = adapter
+                    activityMain.progress.visibility = View.GONE
+                    Toast.makeText(this, "Buscando por $busca", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFail = {
+                runOnUiThread {
+                    AlertDialog.Builder(this)
+                        .setTitle("Atenção")
+                        .setMessage("Não foi possível recuperar sua solicitação.")
+                        .setPositiveButton("Ok") { alert, _ ->
+                            alert.dismiss()
+                        }.show()
+                }
             }
-            runOnUiThread {
-                adapter = ContatoAdapter(this, listaFiltrada) { onClickItemRecyclerView(it) }
-                activityMain.recyclerView.adapter = adapter
-                activityMain.progress.visibility = View.GONE
-                Toast.makeText(this, "Buscando por $busca", Toast.LENGTH_SHORT).show()
-            }
-        }.start()
+        )
     }
 }
